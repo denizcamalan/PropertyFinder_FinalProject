@@ -1,0 +1,122 @@
+package models
+
+import (
+	"log"
+
+	"github.com/denizcamalan/PF_FinalProject/database"
+	"github.com/denizcamalan/PF_FinalProject/entities"
+)
+
+type ProductModel struct {
+}
+
+func (*ProductModel) AddItem(id,quantity int64, name,description string, price, vat float64) error{
+	db, err1 := database.Get_db()
+	if err1 != nil {
+		return err1
+	} else {
+		_, err := db.Exec("INSERT INTO products (id,name,price,vat,description,quantity) VALUES (?,?,?,?,?,?)",id ,name ,vat ,price,description,quantity) 
+		if err != nil {
+			log.Println(err, "PRIMARY KEY")
+			return err
+		}
+		db.Close()
+		return nil
+	}
+}
+
+func (*ProductModel) ListAll() ([]entities.Product, error) {
+
+	db, err := database.Get_db()
+	if err != nil {
+		return nil, err
+	} else {
+		values, err := db.Query("SELECT * FROM products")
+		if err != nil {
+			return nil, err
+		}else {
+			defer values.Close()
+			var products []entities.Product
+			var product entities.Product
+			for values.Next() {
+				values.Scan(&product.Id, &product.Name, &product.Price, &product.VAT,
+				&product.Quantity, &product.Description,
+				)
+				products = append(products, product)
+			}
+			db.Close()
+			return products, nil
+		}
+	}
+
+}
+
+func (*ProductModel) SelectItem(id int64) (entities.Product, error) {
+
+	db, err := database.Get_db()
+	if err != nil {
+		return entities.Product{}, err
+	} else {
+		values, err := db.Query("SELECT * FROM products WHERE id=?", id)
+		if err != nil {
+			return entities.Product{}, err
+		}else {
+			defer values.Close()
+			var product entities.Product
+			for values.Next() {
+				values.Scan(&product.Id, &product.Name, &product.Price, &product.VAT,
+				&product.Quantity, &product.Description,
+				)
+			}
+			db.Close()
+			return product, nil
+		}
+	}
+}
+
+
+func (*ProductModel) UpdateItem(id int64, quantity int64) (error) {
+	db, err := database.Get_db()
+	if err != nil {
+		return err
+	} else {
+		values, err := db.Prepare("UPDATE products SET quantity=? WHERE id=?")
+		if err != nil {
+			return err
+		}else {
+			defer values.Close()
+			res, err	:= values.Exec(quantity,id)
+			if err !=nil{
+				log.Println(err)
+			}
+			_, err2 := res.RowsAffected()
+			if err2 !=nil{
+				log.Println(err)
+			}
+			db.Close()
+			return nil
+		}
+	}
+}
+
+func (*ProductModel) DeleteItem(id int64) error{
+
+	db, err := database.Get_db()
+	if err != nil {
+		return err
+	} else {
+		stmt, err := db.Prepare("DELETE FROM products where id=?") 
+		if err != nil{
+			log.Println(err,"Delete db")
+			return err
+		}
+		defer stmt.Close()
+		_,err2 := stmt.Exec(id)
+		if err2 != nil{
+			log.Println(err2,"Exec Delete db")
+			return err
+		}
+		db.Close()
+		return nil
+	}
+}
