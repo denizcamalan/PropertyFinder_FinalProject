@@ -1,56 +1,48 @@
 package controller
 
-//var discount float64
+import (
+	"math"
+)
+
+var discount float64
 
 func Campaign_1() float64{
-	var discount float64
-	items , _ := cartModel.ListAll()
+
 	
 	perCarMaxAmount := 1000.
+
 	if i % 3 == 0 && totPrice >= perCarMaxAmount{
 		for _,value := range items{
 			if value.VAT == 0.08{
-				discount = totVat - Discount(totVat,0.1)
+				discount =+ Discount(totVat,0.1)
 			}else if value.VAT == 0.18{
-				discount = totVat - Discount(totVat,0.15)
+				discount =+ Discount(totVat,0.15)
 			}else {
-				discount = totVat
+				discount += 0
 			}
 		}
-		return discount
-	}else {
-		return 0.
 	}
+	return discount
 }
-var alert int
+
 func Campaign_2() float64{
-	var discount float64
-	items , _ := cartModel.ListAll()
 
 	for _,value := range items {
 		if value.Quantity >= 4{
-			discount = totVat - Discount(value.Price,0.08)
-			alert++
+			discount += Discount(value.Price,0.08)
+		}else if  value.Quantity < 4{
+			discount += 0 
 		}
-		// else if alert > 0 {
-		// 	alert--
-		// 	return discount
-		// }else {
-		// 	discount = 0.
-		// }
 	}
 	return discount
 }
 
 func Campaign_3() float64{
-	var discount float64
 
 	MaxInMonth := 9000.0
 
 	if totPrice > MaxInMonth{
-		discount = totVat - Discount(totVat,0.1)
-	}else {
-		discount=0
+		discount = Discount(totVat,0.1)
 	}
 	return discount
 }
@@ -61,15 +53,18 @@ func Discount(value, ratio float64) float64{
 }
 
 func SelectCampign() float64{
-	a := Campaign_1()
-	b := Campaign_2()
-	c := Campaign_3()
 
-	if(a<b && a<c){
-        return a
-    }else if(b<a && b<c){
-        return b
-    }else{
-        return c
-    }
+	campaign1 := Campaign_1()
+	campaign2 := Campaign_2()
+	campaign3 := Campaign_3()
+	
+	return MaxOfThree(campaign1,campaign2,campaign3)
+}
+
+func MaxOfThree(campaign1, campaign2, campaign3 float64) float64{
+
+	result := math.Max(campaign1, campaign2)
+	result = math.Max(result, campaign3)
+	return result
+
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/denizcamalan/PF_FinalProject/servers"
 	"github.com/gin-gonic/gin"
 )
-var b servers.DataBaseServer = &models.ProductModel{}
+var PRODUCT servers.DataBaseServer = &models.ProductModel{}
 var productModel models.ProductModel
 
 func ProductList() gin.HandlerFunc {
@@ -68,7 +68,7 @@ func ProductAdd() gin.HandlerFunc {
 		if err4 != nil{log.Println(err4,"ProductAdd : strconv : vat")}
 		vat = intID4
 
-		b.AddItem(id,quantity, name, description, price, vat)
+		PRODUCT.AddItem(id,quantity, name, description, price, vat)
 
 		c.Redirect(http.StatusFound, "/users/productlist")
 	}
@@ -96,7 +96,7 @@ func RemoveProductItem() gin.HandlerFunc {
 				UpdateNewPrice()
 				break
 			}else {
-				b.DeleteItem(intID)
+				PRODUCT.DeleteItem(intID)
 				UpdateNewPrice()
 			}
 		}

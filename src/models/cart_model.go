@@ -10,6 +10,14 @@ import (
 type CartModel struct{
 }
 
+// type Cart interface{
+// 	AddItem(id,quantity int64, name,description string, price, vat float64) error
+// 	ListItem() ([]entities.Item) 
+// 	UpdateItem(id, quantity int64) (error)
+// 	SelectItem(id int64) (entities.Item, error)
+// 	DeleteItem(id int64) (error)
+// }
+
 func (*CartModel) AddItem(id,quantity int64, name,description string, price, vat float64) error{
 	db, err1 := database.Get_db()
 	if err1 != nil {
@@ -24,42 +32,42 @@ func (*CartModel) AddItem(id,quantity int64, name,description string, price, vat
 	}
 }
 
-func (*CartModel) ListAll() ([]entities.ProductUser, error) {
+func (*CartModel) ListAll() ([]entities.Item) {
 
 	db, err := database.Get_db()
 	if err != nil {
-		return nil, err
+		return nil
 	}else {
 		values, err := db.Query("SELECT * FROM cart")
 		if err != nil {
-			return nil, err
+			return nil
 		}else {
 			defer values.Close()
-			var items []entities.ProductUser
-			var item entities.ProductUser
+			var items []entities.Item
+			var item entities.Item
 			for values.Next() {
 				values.Scan(&item.Id, &item.Name, &item.Price, &item.VAT, &item.Description, &item.Quantity)
 				items = append(items, item)
 			}
 			db.Close()
-			return items, nil
+			return items
 		}
 	}
 
 }
 
-func (*CartModel) SelectItem(id int64) (entities.ProductUser, error) {
+func (*CartModel) SelectItem(id int64) (entities.Item, error) {
 
 	db, err := database.Get_db()
 	if err != nil {
-		return entities.ProductUser{}, err
+		return entities.Item{}, err
 	} else {
 		values, err := db.Query("SELECT * FROM cart WHERE id=?", id)
 		if err != nil {
-			return entities.ProductUser{}, err
+			return entities.Item{}, err
 		}else {
 			defer values.Close()
-			var product entities.ProductUser
+			var product entities.Item
 			for values.Next() {
 				values.Scan(&product.Id, &product.Name, &product.Price, &product.VAT,
 				&product.Description, &product.Quantity,
@@ -71,7 +79,7 @@ func (*CartModel) SelectItem(id int64) (entities.ProductUser, error) {
 	}
 }
 
-func (*CartModel) UpdateItem(id int64, quantity int64) (error) {
+func (*CartModel) UpdateItem(id, quantity int64) (error) {
 	//quantity++
 	db, err := database.Get_db()
 	if err != nil {
