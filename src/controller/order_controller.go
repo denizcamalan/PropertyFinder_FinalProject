@@ -13,10 +13,11 @@ import (
 
 var (
 	ordered_count int 
-	totPrice float64
+	tot_ordered_amount float64
 	order []entities.Order
+	months = []entities.Date{}
+	total_amount_in_month float64
 )
-
 func ListOrders() gin.HandlerFunc {
 	return func(c *gin.Context) {	
 
@@ -30,13 +31,11 @@ func ListOrders() gin.HandlerFunc {
 				str_order := session.Get("orders").(string)
 				err := json.Unmarshal([]byte(str_order), &order)
 				if err != nil{
-					log.Println(err,"Unmars ListOrder")
+					log.Println(err,"Unmarshall : ListOrder")
 				}
 				
 				data := map[string]interface{}{
 					"Order": order,
-					"TotalOrderPrice" : totPrice,
-					"TotalOrder" : ordered_count,
 				}
 				c.JSON(http.StatusOK, data)
 			}
@@ -47,22 +46,24 @@ func ListOrders() gin.HandlerFunc {
 func BuyCart() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		if items != nil {
+		if items != nil { 
+			var today = entities.Date{Day: time.Now().Day(),Mount: time.Now().Month(),Year: time.Now().Year()}
 
 			ordered_count++
 			session := sessions.Default(c)
-			
-			var totQua int64
-			//var totprice float64
+
 			var order []entities.Order
 
 			if campaign == 0. {
-				totPrice += totVat
+				tot_ordered_amount += tot_card_price_with_VAT
+				total_amount_in_month += TotalInMount(tot_card_price_with_VAT,today)
 			}else {
-				totPrice += campaign
+				tot_ordered_amount += campaign
+				total_amount_in_month += TotalInMount(campaign,today)
 			}
-
-			order = append(order, entities.Order{Order_ID: 1, Orderered_At: entities.Date{Day: time.Now().Day(),Mount: time.Now().Month(), Year: time.Now().Year()}, TotalAmount: 100000,TotalAmountinMonth: 3000 , Quantity: totQua})
+			order = append(order, entities.Order{TotalOrder: int64(ordered_count), Orderered_At: entities.Date{
+							Day: time.Now().Day(),Mount: time.Now().Month(), Year: time.Now().Year()},
+							TotalAmountinMonth: total_amount_in_month, TotalAmount: tot_ordered_amount},)
 			bytesOrder, err := json.Marshal(order)
 			if err != nil{
 				log.Println(err)
@@ -74,8 +75,8 @@ func BuyCart() gin.HandlerFunc {
 			
 			for _, id := range items{
 				deleteErr := CART.DeleteItem(id.Id)
-				tot = 0
-				totVat = 0
+				tot_card_price = 0
+				tot_card_price_with_VAT = 0
 				campaign = 0
 				if err != nil{
 					log.Println(deleteErr,"DeleteAll")
@@ -87,4 +88,15 @@ func BuyCart() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest,"YOUR CART IS EMTY")	
 		}
 	}
+}
+
+func TotalInMount(total float64, today entities.Date) float64{
+	var total_in_month float64
+	months = append(months, today)
+	for _,mount := range months{
+		if today.Mount == mount.Mount{
+			total_in_month = total
+		}
+	}
+	return total_in_month
 }

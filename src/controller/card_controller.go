@@ -13,8 +13,8 @@ import (
 )
 
 var (	
-		tot float64
-		totVat float64
+		tot_card_price float64
+		tot_card_price_with_VAT float64  
 		campaign float64
 		cartModel models.CartModel
 		items = cartModel.ListAll()
@@ -24,7 +24,7 @@ var (
 func AddToCart() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		productQueryID := c.Request.URL.Query().Get("id")
-		if productQueryID == "" {
+		if productQueryID == ""{
 			log.Println("product id is empty",productQueryID)
 			_ = c.AbortWithError(http.StatusBadRequest, errors.New("product id is empty"))
 			return
@@ -32,6 +32,7 @@ func AddToCart() gin.HandlerFunc {
 
 		intID,err := strconv.ParseInt(productQueryID,10,64)
 		if err != nil{
+			CART.DeleteItem(intID)
 			log.Println(err)
 		}
 
@@ -79,8 +80,8 @@ func ListCart()gin.HandlerFunc {
 
 		data := map[string]interface{}{
 			"Cart": items,
-			"TotalPrice": tot,
-			"TotalwithVAT": totVat,
+			"TotalPrice": tot_card_price,
+			"TotalwithVAT": tot_card_price_with_VAT,
 			"_CampaignPrice": campaign,
 		}
 
@@ -98,19 +99,15 @@ func RemoveToCart()gin.HandlerFunc {
 			log.Println(err)
 		}
 		
-		log.Println(intID,": intID")
-		log.Println("*")
 		items = cartModel.ListAll()
 		for _,value := range items {
 			if  intID == value.Id && value.Quantity > 1 {
-				log.Println(value.Id,": ID : if")
 				err := CART.UpdateItem(intID,value.Quantity-1)
 				if err != nil { log.Println(err, "RemoveToCart : UpdateItem")}
 				UpdateNewPrice()
 				FindCampgainPrice()
 				break
 			}else if intID == value.Id && value.Quantity == 1 {
-				log.Println(value.Id,": ID : else")
 				CART.DeleteItem(intID)
 				UpdateNewPrice()
 				FindCampgainPrice()
@@ -139,20 +136,20 @@ func Delete(cart []entities.Item, index int64) []entities.Item{
 }
 
 func UpdateNewPrice(){
-	var totVat1 = 0.
-	var tot1 = 0.
+	var tot_card_price_with_VAT1 = 0.
+	var tot_card_price1 = 0.
 	items = cartModel.ListAll()
 	for _,value := range items {
-		tot1 += Total(value.Price,value.Quantity)
-		totVat1 += TotalWithVAT(value.Price,value.VAT,value.Quantity)
+		tot_card_price1 += Total(value.Price,value.Quantity)
+		tot_card_price_with_VAT1 += TotalWithVAT(value.Price,value.VAT,value.Quantity)
 	}
-	tot = tot1
-	totVat = totVat1
+	tot_card_price = tot_card_price1
+	tot_card_price_with_VAT = tot_card_price_with_VAT1
 }
 
 func FindCampgainPrice(){
-	campaign = totVat - SelectCampign()
-	if campaign == totVat || SelectCampign() == 0 {
+	campaign = tot_card_price_with_VAT - SelectCampign()
+	if campaign == tot_card_price_with_VAT || SelectCampign() == 0 {
 		campaign = 0
 	}
 }
