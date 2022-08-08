@@ -13,14 +13,12 @@ import (
 )
 
 var (	
-		items = cartModel.ListAll()
-		CART servers.DataBaseServer = &models.CartModel{}
-		cartModel models.CartModel
 		tot float64
 		totVat float64
 		campaign float64
-		i int
-		totPrice float64
+		cartModel models.CartModel
+		items = cartModel.ListAll()
+		CART servers.DataBaseServer = &models.CartModel{}
 	)
 
 func AddToCart() gin.HandlerFunc {
@@ -37,17 +35,14 @@ func AddToCart() gin.HandlerFunc {
 			log.Println(err)
 		}
 
-		userProduct, err := productModel.SelectItem(intID)
-		if err != nil {
-			log.Println(err, "AddToCard : SelectItem")
+		userProduct, err2 := productModel.SelectItem(intID)
+		if err2 != nil {
+			log.Println(err2, "AddToCard : SelectItem")
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
+
 		items = cartModel.ListAll()
-		if err !=nil{
-			log.Println(err, "AddToCard : ListAll")
-			return
-		}
 		if items == nil {
 			err2 := CART.AddItem(userProduct.Id,1,userProduct.Name,userProduct.Description,userProduct.Price,userProduct.VAT )
 				if err != nil {
@@ -55,18 +50,21 @@ func AddToCart() gin.HandlerFunc {
 					return
 				}
 				UpdateNewPrice()
+				campaign = totVat - SelectCampign()
 		}else {
 			for _,values := range items {
 				if values.Id != intID{
 					err2 := CART.AddItem(userProduct.Id,1,userProduct.Name,userProduct.Description,
 					userProduct.Price,userProduct.VAT )	
 					UpdateNewPrice()
+					campaign = totVat - SelectCampign()
 					if err != nil {
 					log.Println(err2,"Primary key")
 					} 
 				}else {
 					CART.UpdateItem(intID,values.Quantity+1)
 					UpdateNewPrice()
+					campaign = totVat - SelectCampign()
 				}
 			}
 		}
@@ -78,12 +76,8 @@ func ListCart()gin.HandlerFunc {
 	return func(c *gin.Context) {
 		
 		items = cartModel.ListAll()
-			
-		campaign = totVat - SelectCampign()
-		log.Println(campaign,"campanyaTot")
 
 		if campaign == totVat {
-
 			campaign = 0
 		}
 
@@ -108,9 +102,9 @@ func RemoveToCart()gin.HandlerFunc {
 			log.Println(err)
 		}
 		
-		items = cartModel.ListAll()
 		log.Println(intID,": intID")
 		log.Println("*")
+		items = cartModel.ListAll()
 		for _,value := range items {
 			if  intID == value.Id && value.Quantity > 1 {
 				log.Println(value.Id,": ID : if")
@@ -147,9 +141,9 @@ func Delete(cart []entities.Item, index int64) []entities.Item{
 }
 
 func UpdateNewPrice(){
-	items = cartModel.ListAll()
 	var totVat1 = 0.
 	var tot1 = 0.
+	items = cartModel.ListAll()
 	for _,value := range items {
 		tot1 += Total(value.Price,value.Quantity)
 		totVat1 += TotalWithVAT(value.Price,value.VAT,value.Quantity)

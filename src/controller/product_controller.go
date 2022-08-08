@@ -12,14 +12,13 @@ import (
 )
 var PRODUCT servers.DataBaseServer = &models.ProductModel{}
 var productModel models.ProductModel
+var products = productModel.ListAll()
 
 func ProductList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		products, err := productModel.ListAll()
-		if err !=nil{
-			log.Println(err, "ProductList listall")
-		}
+		products = productModel.ListAll()
+
 		data := map[string]interface{}{
 			"products": products,
 		}
@@ -87,9 +86,9 @@ func RemoveProductItem() gin.HandlerFunc {
 		intID,err := strconv.ParseInt(productQueryID,10,64)
 		if err != nil{log.Println(err, "RemoveProjectItem : strconv ")}
 		
-		items , _ := productModel.ListAll()
+		products = productModel.ListAll()
 
-		for _,value := range items {
+		for _,value := range products {
 			if  intID == value.Id && value.Quantity > 1 {
 				err := productModel.UpdateItem(intID,value.Quantity-1)
 				if err != nil { log.Println(err, "RemoveProjectItem : UpdateItem")}

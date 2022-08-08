@@ -32,7 +32,7 @@ func (*CartModel) AddItem(id,quantity int64, name,description string, price, vat
 	}
 }
 
-func (*CartModel) ListAll() ([]entities.Item) {
+func (*CartModel) ListAll() []entities.Item {
 
 	db, err := database.Get_db()
 	if err != nil {

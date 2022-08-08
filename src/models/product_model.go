@@ -25,15 +25,16 @@ func (*ProductModel) AddItem(id,quantity int64, name,description string, price, 
 	}
 }
 
-func (*ProductModel) ListAll() ([]entities.Product, error) {
+
+func (*ProductModel) ListAll() []entities.Product {
 
 	db, err := database.Get_db()
 	if err != nil {
-		return nil, err
+		return nil
 	} else {
 		values, err := db.Query("SELECT * FROM products")
 		if err != nil {
-			return nil, err
+			return nil
 		}else {
 			defer values.Close()
 			var products []entities.Product
@@ -45,7 +46,7 @@ func (*ProductModel) ListAll() ([]entities.Product, error) {
 				products = append(products, product)
 			}
 			db.Close()
-			return products, nil
+			return products
 		}
 	}
 

@@ -7,55 +7,87 @@ import (
 )
 
 var (
-	discount 	float64
-	totVat 		float64
-	tot 		float64
+	quantity int64
+	quantity2 int64 
+	discount float64
+	want_discount float64
+	// totVat 		float64
+	// tot 		float64
 )
 
-func TestCampaign2(t *testing.T){
-	var quantity int64 = 0
-	var quantity2 int64 = 0
-	items := []entities.Item{
-		{
-		Id: 1,
-		Name: "Macbook Air",
-		Price: 1200,
-		VAT: 0.18,
-		Description: "computer",
-		Quantity: quantity,
-		},
-		{
-		Id:	3,
-		Name: "Apple 13 Pro",
-		Price: 1025.99,
-		VAT: 0.08,
-		Quantity: quantity2,
-		Description: "phone",
-		}}
+func TestCampaign1(t *testing.T){
 
-	discount = Campaign_2(items)
-	want_discount := 201.925536
-
-	if discount != want_discount && quantity == 4 && quantity2 == 4{
-        t.Errorf("Discounted Value %f, Want Discounted Value %f", discount, want_discount)
-    }
-
-	discount = Campaign_2(items)
-	want_discount = 0.
-
-	if discount != want_discount && quantity == 3 && quantity2 == 3 {
-        t.Errorf("Discounted Value %f, Want Discounted Value %f", discount, want_discount)
-    }
-
-	discount = Campaign_2(items)
-	want_discount = 0.
-	quantity = 3
-	quantity2 = 4
-	if discount != want_discount {
-        t.Errorf("Discounted Value %f, Want Discounted Value %f", discount, want_discount)
-    }
 }
 
+func TestCampaign2(t *testing.T){
+
+	for test := 0; test < 3; test++{
+
+		switch test{
+			case 0:
+				quantity = 4
+				quantity2 = 4
+				want_discount = ((1200*0.18)+1200)*0.08 +((1025.99*0.08)+1025.99)*0.08
+			continue
+			case 1:
+				quantity = 3
+				quantity2 = 2
+				want_discount = 0.
+			continue
+			case 2:
+				quantity = 3
+				quantity2 = 4
+				want_discount = ((1025.99*0.08)+1025.99)*0.08
+			continue
+		}
+	
+		items := []entities.Item{
+			{
+			Id: 1,
+			Name: "Macbook Air",
+			Price: 1200,
+			VAT: 0.18,
+			Description: "computer",
+			Quantity: quantity,
+			},
+			{
+			Id:	3,
+			Name: "Apple 13 Pro",
+			Price: 1025.99,
+			VAT: 0.08,
+			Quantity: quantity,
+			Description: "phone",
+			},
+		}
+
+		discount := Campaign_2(items)
+		if discount != want_discount {
+			t.Errorf("Discounted Value %f, Want Discounted Value %f", discount, want_discount)
+		}
+	}
+}
+
+func TestCampaign3(t *testing.T){
+
+}
+
+func Campaign_1(i int, totPrice, totVat float64, items []entities.Item) float64{
+
+	MaxAmount := 1000.
+
+	if i % 3 == 0 && totPrice >= MaxAmount{
+		for _,value := range items{
+			if value.VAT == 0.08{
+				discount =+ Discount(totVat,0.1)
+			}else if value.VAT == 0.18{
+				discount =+ Discount(totVat,0.15)
+			}else {
+				discount += 0
+			}
+		}
+	}
+	return discount
+}
 
 	func Campaign_2(items []entities.Item) float64{
 

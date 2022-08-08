@@ -9,9 +9,9 @@ var discount float64
 func Campaign_1() float64{
 
 	
-	perCarMaxAmount := 1000.
+	MaxAmount := 1000.
 
-	if i % 3 == 0 && totPrice >= perCarMaxAmount{
+	if ordered % 3 == 0 && totPrice >= MaxAmount{
 		for _,value := range items{
 			if value.VAT == 0.08{
 				discount =+ Discount(totVat,0.1)

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/denizcamalan/PF_FinalProject/entities"
@@ -12,6 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	ordered int
+	totPrice float64
+)
 
 func ListOrders() gin.HandlerFunc {
 	return func(c *gin.Context) {	
@@ -22,8 +25,10 @@ func ListOrders() gin.HandlerFunc {
 		if str_order == nil{
 			c.JSON(http.StatusOK," NO ORDERED ")
 		}else {
-			ordernum := strconv.Itoa(i)
-
+			// restrict dublicate order by get list
+			if items == nil{
+				ordered++
+			}
 			if str_order != nil{
 				str_order := session.Get("orders").(string)
 				var order []entities.Order
@@ -33,9 +38,9 @@ func ListOrders() gin.HandlerFunc {
 				}
 				
 				data := map[string]interface{}{
-					"Order"+ordernum : order,
+					"Order": order,
 					"TotalOrderPrice" : totPrice,
-					"TotalOrder" : i,
+					"TotalOrder" : ordered,
 				}
 				c.JSON(http.StatusOK, data)
 			}
@@ -45,8 +50,6 @@ func ListOrders() gin.HandlerFunc {
 
 func BuyCart() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		items = cartModel.ListAll()
 		
 		session := sessions.Default(c)
 		
@@ -60,7 +63,7 @@ func BuyCart() gin.HandlerFunc {
 			totPrice = campaign
 		}
 
-		order = append(order, entities.Order{Order_ID: 1,Orderered_At: time.Now() , TotalAmount: 100000,TotalAmountinMonth: 3000 , Quantity: totQua})
+		order = append(order, entities.Order{Order_ID: 1, Orderered_At: entities.Date{Day: time.Now().Day(),Mount: time.Now().Month(), Year: time.Now().Year()}, TotalAmount: 100000,TotalAmountinMonth: 3000 , Quantity: totQua})
 		bytesOrder, err := json.Marshal(order)
 		if err != nil{
 			log.Println(err)
@@ -78,7 +81,7 @@ func BuyCart() gin.HandlerFunc {
 				log.Println(deleteErr,"DeleteAll")
 			}
 		}
-		i++
+		
 		c.Redirect(http.StatusFound, "/users/orders")
 	}
 }
