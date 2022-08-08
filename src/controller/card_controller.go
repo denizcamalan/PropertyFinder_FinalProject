@@ -50,21 +50,21 @@ func AddToCart() gin.HandlerFunc {
 					return
 				}
 				UpdateNewPrice()
-				campaign = totVat - SelectCampign()
+				FindCampgainPrice()
 		}else {
 			for _,values := range items {
 				if values.Id != intID{
 					err2 := CART.AddItem(userProduct.Id,1,userProduct.Name,userProduct.Description,
 					userProduct.Price,userProduct.VAT )	
 					UpdateNewPrice()
-					campaign = totVat - SelectCampign()
+					FindCampgainPrice()
 					if err != nil {
 					log.Println(err2,"Primary key")
 					} 
 				}else {
 					CART.UpdateItem(intID,values.Quantity+1)
 					UpdateNewPrice()
-					campaign = totVat - SelectCampign()
+					FindCampgainPrice()
 				}
 			}
 		}
@@ -76,10 +76,6 @@ func ListCart()gin.HandlerFunc {
 	return func(c *gin.Context) {
 		
 		items = cartModel.ListAll()
-
-		if campaign == totVat {
-			campaign = 0
-		}
 
 		data := map[string]interface{}{
 			"Cart": items,
@@ -111,11 +107,13 @@ func RemoveToCart()gin.HandlerFunc {
 				err := CART.UpdateItem(intID,value.Quantity-1)
 				if err != nil { log.Println(err, "RemoveToCart : UpdateItem")}
 				UpdateNewPrice()
+				FindCampgainPrice()
 				break
 			}else if intID == value.Id && value.Quantity == 1 {
 				log.Println(value.Id,": ID : else")
 				CART.DeleteItem(intID)
 				UpdateNewPrice()
+				FindCampgainPrice()
 			}
 		}
 		c.Redirect(http.StatusFound, "/users/cart")
@@ -150,4 +148,11 @@ func UpdateNewPrice(){
 	}
 	tot = tot1
 	totVat = totVat1
+}
+
+func FindCampgainPrice(){
+	campaign = totVat - SelectCampign()
+	if campaign == totVat || SelectCampign() == 0 {
+		campaign = 0
+	}
 }

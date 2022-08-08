@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -31,7 +32,7 @@ func Campaign_2() float64{
 		if value.Quantity >= 4{
 			discount += Discount(value.Price,0.08)
 		}else if  value.Quantity < 4{
-			discount += 0 
+			discount = 0 
 		}
 	}
 	return discount
@@ -65,6 +66,7 @@ func MaxOfThree(campaign1, campaign2, campaign3 float64) float64{
 
 	result := math.Max(campaign1, campaign2)
 	result = math.Max(result, campaign3)
+	fmt.Println(result,"Campaign result")
 	return result
 
 }
