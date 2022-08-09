@@ -41,8 +41,6 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`id`, `name`, `vat`, `price`, `description`, `quantity`) VALUES
-(3, 'Apple 13 Pro', 1025.6, 0.08, 'phone', 4),
-(4, 'Arcelik Hg567', 235.3, 0.08, 'refrigerator', 2);
 
 -- --------------------------------------------------------
 
