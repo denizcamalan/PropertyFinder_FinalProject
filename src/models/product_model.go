@@ -7,9 +7,11 @@ import (
 	"github.com/denizcamalan/PF_FinalProject/entities"
 )
 
+
 type ProductModel struct {
 }
 
+// Add product into database
 func (*ProductModel) AddItem(id,quantity int64, name,description string, price, vat float64) error{
 	db, err1 := database.Get_db()
 	if err1 != nil {
@@ -25,8 +27,8 @@ func (*ProductModel) AddItem(id,quantity int64, name,description string, price, 
 	}
 }
 
-
-func (*ProductModel) ListAll() []entities.Product {
+// List all products
+func (*ProductModel) ListAll() []interface{}{
 
 	db, err := database.Get_db()
 	if err != nil {
@@ -37,30 +39,39 @@ func (*ProductModel) ListAll() []entities.Product {
 			return nil
 		}else {
 			defer values.Close()
-			var products []entities.Product
-			var product entities.Product
+			// product array
+			var products_new []entities.Product
+			// product struct
+			var product_new entities.Product
+			// add every product to array for making list
 			for values.Next() {
-				values.Scan(&product.Id, &product.Name, &product.Price, &product.VAT,
-				&product.Quantity, &product.Description,
+				values.Scan(&product_new.Id, &product_new.Name, &product_new.Price, &product_new.VAT,
+				&product_new.Quantity, &product_new.Description,
 				)
-				products = append(products, product)
+				products_new = append(products_new, product_new)
 			}
 			db.Close()
-			return products
+			// convert product_new array to interface
+			interface_products := make([]interface{}, len(products_new))
+			for index, values := range products_new {
+				interface_products[index] = values
+			}
+			return interface_products
 		}
 	}
 
 }
 
-func (*ProductModel) SelectItem(id int64) (entities.Product, error) {
+// Select items from products database
+func (*ProductModel) SelectItem(id int64) interface{} {
 
 	db, err := database.Get_db()
 	if err != nil {
-		return entities.Product{}, err
+		return entities.Product{}
 	} else {
 		values, err := db.Query("SELECT * FROM products WHERE id=?", id)
 		if err != nil {
-			return entities.Product{}, err
+			return entities.Product{}
 		}else {
 			defer values.Close()
 			var product entities.Product
@@ -70,12 +81,12 @@ func (*ProductModel) SelectItem(id int64) (entities.Product, error) {
 				)
 			}
 			db.Close()
-			return product, nil
+			return product
 		}
 	}
 }
 
-
+// update products item into the database
 func (*ProductModel) UpdateItem(id int64, quantity int64) (error) {
 	db, err := database.Get_db()
 	if err != nil {
@@ -100,6 +111,7 @@ func (*ProductModel) UpdateItem(id int64, quantity int64) (error) {
 	}
 }
 
+// delete product items from database
 func (*ProductModel) DeleteItem(id int64) error{
 
 	db, err := database.Get_db()

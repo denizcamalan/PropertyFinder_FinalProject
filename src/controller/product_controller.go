@@ -6,35 +6,34 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/denizcamalan/PF_FinalProject/entities"
 	"github.com/denizcamalan/PF_FinalProject/models"
 	"github.com/denizcamalan/PF_FinalProject/servers"
 	"github.com/gin-gonic/gin"
 )
-var PRODUCT servers.DataBaseServer = &models.ProductModel{}
-var productModel models.ProductModel
-var products = productModel.ListAll()
+var (
+	PRODUCT servers.DataBaseServer = &models.ProductModel{}
+	product_result = ListProducts()
+)
 
+// list product with JSON format
 func ProductList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		products = productModel.ListAll()
+		product_result = ListProducts()
 
 		data := map[string]interface{}{
-			"products": products,
+			"products": product_result,
 		}
-
 		c.JSON(http.StatusOK, data)
 	}
-
 }
-
+ // add product to market
 func ProductAdd() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var (
-			id, quantity int64
+		var (id, quantity int64
 			name, description string
-			price, vat float64
-		)
+			price, vat float64)
 
 		// ID
 		id1 := c.Request.URL.Query().Get("id")
@@ -74,6 +73,7 @@ func ProductAdd() gin.HandlerFunc {
 
 }
 
+// delete product to the market
 func RemoveProductItem() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -85,21 +85,18 @@ func RemoveProductItem() gin.HandlerFunc {
 		}
 		intID,err := strconv.ParseInt(productQueryID,10,64)
 		if err != nil{log.Println(err, "RemoveProjectItem : strconv ")}
-		
-		products = productModel.ListAll()
 
-		for _,value := range products {
-			if  intID == value.Id && value.Quantity > 1 {
-				err := productModel.UpdateItem(intID,value.Quantity-1)
-				if err != nil { log.Println(err, "RemoveProjectItem : UpdateItem")}
-				UpdateNewPrice()
-				break
-			}else {
-				PRODUCT.DeleteItem(intID)
-				UpdateNewPrice()
-			}
-		}
+		PRODUCT.DeleteItem(intID)
+		
 		c.Redirect(http.StatusFound, "/users/productlist")
 	}
 }
 
+// call ListAll function
+func ListProducts() []entities.Product{
+	products := []entities.Product{}
+	for _,value := range PRODUCT.ListAll(){
+		products = append(products , value.(entities.Product))
+	}
+	return products
+}

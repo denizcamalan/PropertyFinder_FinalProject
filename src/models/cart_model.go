@@ -10,14 +10,7 @@ import (
 type CartModel struct{
 }
 
-// type Cart interface{
-// 	AddItem(id,quantity int64, name,description string, price, vat float64) error
-// 	ListItem() ([]entities.Item) 
-// 	UpdateItem(id, quantity int64) (error)
-// 	SelectItem(id int64) (entities.Item, error)
-// 	DeleteItem(id int64) (error)
-// }
-
+// Add items to cart from products database
 func (*CartModel) AddItem(id,quantity int64, name,description string, price, vat float64) error{
 	db, err1 := database.Get_db()
 	if err1 != nil {
@@ -32,7 +25,8 @@ func (*CartModel) AddItem(id,quantity int64, name,description string, price, vat
 	}
 }
 
-func (*CartModel) ListAll() []entities.Item {
+// List all of the selected items into the cart
+func (*CartModel) ListAll() []interface{} {
 
 	db, err := database.Get_db()
 	if err != nil {
@@ -43,28 +37,37 @@ func (*CartModel) ListAll() []entities.Item {
 			return nil
 		}else {
 			defer values.Close()
-			var items []entities.Item
-			var item entities.Item
+			// cart array
+			var items_new []entities.Item
+			// item struct
+			var item_new entities.Item
+			// add every item to struct to make list
 			for values.Next() {
-				values.Scan(&item.Id, &item.Name, &item.Price, &item.VAT, &item.Description, &item.Quantity)
-				items = append(items, item)
+				values.Scan(&item_new.Id, &item_new.Name, &item_new.Price, &item_new.VAT, &item_new.Description, &item_new.Quantity)
+				items_new = append(items_new, item_new)
 			}
 			db.Close()
-			return items
+			// convert cart array to interface 
+			interface_items := make([]interface{}, len(items_new))
+			for index, values := range items_new {
+				interface_items[index] = values
+			}
+			return interface_items
 		}
 	}
 
 }
 
-func (*CartModel) SelectItem(id int64) (entities.Item, error) {
+// select item from database by item's id
+func (*CartModel) SelectItem(id int64) interface{} {
 
 	db, err := database.Get_db()
 	if err != nil {
-		return entities.Item{}, err
+		return entities.Item{}
 	} else {
 		values, err := db.Query("SELECT * FROM cart WHERE id=?", id)
 		if err != nil {
-			return entities.Item{}, err
+			return entities.Item{}
 		}else {
 			defer values.Close()
 			var product entities.Item
@@ -74,13 +77,14 @@ func (*CartModel) SelectItem(id int64) (entities.Item, error) {
 				)
 			}
 			db.Close()
-			return product, nil
+			return product
 		}
 	}
 }
 
+// update cart table 
 func (*CartModel) UpdateItem(id, quantity int64) (error) {
-	//quantity++
+
 	db, err := database.Get_db()
 	if err != nil {
 		return err
@@ -104,6 +108,7 @@ func (*CartModel) UpdateItem(id, quantity int64) (error) {
 	}
 }
 
+// delete items from cart table
 func (*CartModel) DeleteItem(id int64) error{
 
 	db, err := database.Get_db()

@@ -43,6 +43,7 @@ func ListOrders() gin.HandlerFunc {
 	}
 }
 
+// buy all of the items into the cart
 func BuyCart() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -54,6 +55,7 @@ func BuyCart() gin.HandlerFunc {
 
 			var order []entities.Order
 
+			// buy with campaing price if it exist
 			if campaign == 0. {
 				tot_ordered_amount += tot_card_price_with_VAT
 				total_amount_in_month += TotalInMount(tot_card_price_with_VAT,today)
@@ -73,6 +75,7 @@ func BuyCart() gin.HandlerFunc {
 			err3 := session.Save()
 			if err3 != nil{log.Println(err3)}
 			
+		// delete all of the items into the cart after buy items
 			for _, id := range items{
 				deleteErr := CART.DeleteItem(id.Id)
 				tot_card_price = 0
@@ -82,7 +85,7 @@ func BuyCart() gin.HandlerFunc {
 					log.Println(deleteErr,"DeleteAll")
 				}
 			}
-			items = cartModel.ListAll()
+			items = ListItems()
 			c.Redirect(http.StatusFound, "/users/orders")
 		}else {
 			c.JSON(http.StatusBadRequest,"YOUR CART IS EMTY")	
@@ -90,6 +93,7 @@ func BuyCart() gin.HandlerFunc {
 	}
 }
 
+// Total ordered amoun in a mount
 func TotalInMount(total float64, today entities.Date) float64{
 	var total_in_month float64
 	months = append(months, today)

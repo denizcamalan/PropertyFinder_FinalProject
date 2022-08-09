@@ -1,5 +1,7 @@
 package entities
 
+// selected item's information into the cart
+
 type Item struct {
 	Id				int64			`json:"id"`
 	Name 			string			`json:"name"`	

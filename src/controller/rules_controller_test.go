@@ -159,41 +159,50 @@ func TestCampaign2(t *testing.T){
 
 		var want_discount float64
 		var tot_card_price_with_VAT = 5000.
-		var total_amount_in_mount float64
+
+		orders := entities.Order{}
 
 		for test := 0; test<3; test++{
 
 			switch test{
 				case 0:
-					total_amount_in_mount = 10000
 					want_discount = 500
+					orders = entities.Order{
+						TotalOrder: 3,
+						Orderered_At: entities.Date{Day: 1,Mount: 5,Year: 2022},
+						TotalAmount: 234567,
+						TotalAmountinMonth: 10000,
+					}
 				case 1:
-					total_amount_in_mount = 8000
 					want_discount = 0
+					orders = entities.Order{
+						TotalOrder: 3,
+						Orderered_At: entities.Date{Day: 1,Mount: 5,Year: 2022},
+						TotalAmount: 10000,
+						TotalAmountinMonth: 8000,
+					}
 				case 2:
-					total_amount_in_mount = 9000
 					want_discount = 0
+					orders = entities.Order{
+						TotalOrder: 3,
+						Orderered_At: entities.Date{Day: 1,Mount: 5,Year: 2022},
+						TotalAmount: 98763,
+						TotalAmountinMonth: 9000,
+					}
 			}
 
-			orders := entities.Order{
-					TotalOrder: 3,
-					Orderered_At: entities.Date{},
-					TotalAmount: 9000,
-					TotalAmountinMonth: total_amount_in_mount,
-				}
-
-			discount := Campaign_3(tot_card_price_with_VAT,orders)
+			discount := Campaign_3(tot_card_price_with_VAT,orders.TotalAmountinMonth)
 			if discount != want_discount {
 				t.Errorf("Discounted Value %f, Want Value %f : Error Case %d", discount, want_discount,test)
 			}
 		}
 	}
 
-	func Campaign_3(tot_card_price_with_VAT float64,orders entities.Order) float64{
+	func Campaign_3(tot_card_price_with_VAT,orders float64 ) float64{
 
 		MaxInMonth := 9000.0
 	
-		if orders.TotalAmountinMonth > MaxInMonth{
+		if orders > MaxInMonth{
 			discount = Discount(tot_card_price_with_VAT,0.1)
 		}else {
 			discount = 0
