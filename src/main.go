@@ -16,7 +16,7 @@ func main(){
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "7200"
 	}
 	router := gin.New()
 	router.SetTrustedProxies([]string{"192.168.1.2"})
