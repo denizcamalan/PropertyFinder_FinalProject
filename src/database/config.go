@@ -14,7 +14,7 @@ func Get_db() (db *sql.DB, err error) {
 	// dbPass := "password"
 	// db, err = sql.Open(dataBaseSystem, dbUser+":"+dbPass+"@tcp(127.0.0.1:8095)/"+dbName)
 
-	db, err = sql.Open("mysql","user:password@tcp(127.0.0.1:8095)/pf_project")
+	db, err = sql.Open("mysql","user:password@tcp(127.0.0.1:8095)/database")
 	db.Ping()
 	
 	return 
