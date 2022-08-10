@@ -16,8 +16,9 @@ func main(){
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "9000"
+		port = "8088"
 	}
+
 	router := gin.New()
 	router.SetTrustedProxies([]string{"192.168.1.2"})
 	store := cookie.NewStore([]byte("mysession"))
@@ -26,5 +27,4 @@ func main(){
 
 	log.Fatal(router.Run(":" + port))
 
-	
 }
