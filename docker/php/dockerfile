@@ -1,7 +1,0 @@
-FROM php:8.0-fpm
-
-RUN apt-get update && \
-  apt-get install -y libgmp-dev git libonig-dev && \
-  docker-php-ext-install pdo_mysql mysqli mbstring gmp
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

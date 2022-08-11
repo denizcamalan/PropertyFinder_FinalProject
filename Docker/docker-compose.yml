@@ -1,0 +1,11 @@
+version: '3'
+services:
+  db:
+    build:
+      context: ./MySQL
+    environment:
+      MYSQL_DATABASE: pf_project
+      MYSQL_ROOT_PASSWORD: password
+    container_name: golang_db
+    ports:
+      - "3306:3306"
