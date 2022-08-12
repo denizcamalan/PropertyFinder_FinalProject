@@ -39,38 +39,32 @@ and database is uploaded.
 
 for ading products to cart:
 
-    POST http://localhost:9000/users/cart/add?id=2
+    POST http://localhost:8088/users/cart/add?id=2
 
  then list cart:
 
-    GET http://localhost:9000/users/cart
+    GET http://localhost:8088/users/cart
 
 delete item:
 
-    POST http://localhost:9000/users/cart/remove?id=1
+    POST http://localhost:8088/users/cart/remove?id=1
 
 buy item into card :
 
-    POST http://localhost:9000/users/cart/buy
+    POST http://localhost:8088/users/cart/buy
 
 list orders :
 
-    GET http://localhost:9000/users/orders
+    GET http://localhost:8088/users/orders
 
 get products :
 
-    GET http://localhost:9000/users/productlist
+    GET http://localhost:8088/users/productlist
 
 add product :
-    POST http://localhost:9000/users/product/add?id=9&quantity=60&name=Harman Kardon Go Plus&description=speaker&price=4550.6&vat=0.18
+
+    POST http://localhost:8088/users/product/add?id=9&quantity=60&name=Harman Kardon Go Plus&description=speaker&price=4550.6&vat=0.18
 
 delete product :
 
-    POST http://localhost:9000/users/product/delete?id=9
-
-
-
-
-
-
-
+    POST http://localhost:8088/users/product/delete?id=9
