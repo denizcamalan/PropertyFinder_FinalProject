@@ -29,9 +29,11 @@ d. Only one discount can be applied at a time. Only the highest discount should 
 
     git clone https://github.com/denizcamalan/PropertyFinder_FinalProject.git
 
-open project and:
+open project and run:
 
-     docker-compose up --build
+     docker-compose up -d
+
+     $GOBIN/PF_FinalProject
 
 and database is uploaded.
 
