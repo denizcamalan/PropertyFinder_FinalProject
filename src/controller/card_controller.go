@@ -135,7 +135,7 @@ func TotalWithVAT(price, VAT float64, quantity int64) float64 {
 	return result
 }
 
-// total cart amoun without VAT
+// total cart amounT without VAT
 func Total(price float64, quantity int64) float64 {
 	result := 0.
 		result = price * float64(quantity) 

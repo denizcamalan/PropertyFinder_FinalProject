@@ -21,11 +21,11 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `products` (`id`, `name`, `price`, `vat`, `quantity`, `description`) VALUES
-(3, 'Apple 13 Pro', 1025.6, 0.08, 23, 'phone'),
-(4, 'Arcelik Hg567', 235.3, 0.08, 12, 'refrigerator'),
-(8, 'Beko Ecological Inverter', 510.5, 0.1, 18, 'air conditioner'),
-(7, 'Hyundai Inverter', 1400.9, 0.08, 5, 'generator'),
-(6, 'JBL', 80.7, 0.1, 39, 'headphone'),
-(1, 'Macbook Air', 1230.6, 0.18, 20, 'computer'),
-(2, 'Samsung S5', 650.4, 0.18, 14, 'phone'),
-(5, 'Vestel Smart', 350.2, 0.1, 30, 'tv');
+(1, 'Apple 13 Pro', 1025.6, 0.08, 23, 'phone'),
+(2, 'Arcelik Hg567', 235.3, 0.08, 12, 'refrigerator'),
+(3, 'Beko Ecological Inverter', 510.5, 0.1, 18, 'air conditioner'),
+(4, 'Hyundai Inverter', 1400.9, 0.08, 5, 'generator'),
+(5, 'JBL', 80.7, 0.1, 39, 'headphone'),
+(6, 'Macbook Air', 1230.6, 0.18, 20, 'computer'),
+(7, 'Samsung S5', 650.4, 0.18, 14, 'phone'),
+(8, 'Vestel Smart', 350.2, 0.1, 30, 'tv');

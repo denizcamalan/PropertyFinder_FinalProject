@@ -51,7 +51,6 @@ func ProductAdd() gin.HandlerFunc {
 		name = c.Request.URL.Query().Get("name")
 
 		// DESCRIPTION
-
 		description = c.Request.URL.Query().Get("description")
 
 		// PRICE
